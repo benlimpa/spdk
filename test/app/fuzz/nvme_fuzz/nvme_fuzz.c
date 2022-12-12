@@ -17,6 +17,8 @@
 
 #define UNIQUE_OPCODES 256
 
+const uint32_t nvm_opcodes[] = {0x00, 0x01, 0x02, 0x04, 0x05, 0x08, 0x09, 0x0D, 0x0E, 0x11, 0x15};
+
 const char g_nvme_cmd_json_name[] = "struct spdk_nvme_cmd";
 char *g_json_file = NULL;
 uint64_t g_runtime_ticks;
@@ -408,6 +410,7 @@ prep_nvme_cmd(struct nvme_fuzz_ns *ns_entry, struct nvme_fuzz_qp *qp, struct nvm
 		memcpy(&ctx->cmd, &g_cmd_array[qp->submitted_cmd_counter], sizeof(ctx->cmd));
 	} else {
 		fuzz_fill_random_bytes((char *)&ctx->cmd, sizeof(ctx->cmd), &qp->random_seed);
+		ctx->cmd.opc = nvm_opcodes[rand_r(&qp->random_seed) % 8];
 
 		if (g_valid_ns_only) {
 			ctx->cmd.nsid = ns_entry->nsid;
